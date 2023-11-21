@@ -1,14 +1,23 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const { getRooms, createRoom, deleteRoom } = require('../controllers/rooms');
+const {
+  getRooms,
+  createRoom,
+  deleteRoom,
+} = require('../controllers/rooms');
 
-// GET -- получить карточки
-router.get('/rooms', getRooms);
+// GET -- получить комнаты
+router.get('/projects/:projectId/rooms', celebrate({
+  params: Joi.object().keys({
+    projectId: Joi.string().length(24).hex().required(),
+  }),
+}), getRooms);
 
-// POST -- создать новую карточку
-router.post('/rooms', celebrate({
+// POST -- создать новую комнату
+router.post('/projects/:projectId/rooms', celebrate({
   body: Joi.object().keys({
+    number: Joi.string().required(),
     name: Joi.string().required(),
     height: Joi.number().required(),
     width: Joi.number().required(),
@@ -16,14 +25,17 @@ router.post('/rooms', celebrate({
     areaWindow: Joi.number().required(),
     areaRoom: Joi.number().required(),
   }),
+  params: Joi.object().keys({
+    projectId: Joi.string().length(24).hex().required(),
+  }),
 }), createRoom);
 
-// DELETE -- удалить карточку
-router.delete('/rooms/:roomId', celebrate({
+// DELETE -- удалить комнату
+router.delete('/projects/:projectId/rooms/:roomId', celebrate({
   params: Joi.object().keys({
+    projectId: Joi.string().length(24).hex().required(),
     roomId: Joi.string().length(24).hex().required(),
   }),
 }), deleteRoom);
-
 
 module.exports = router;

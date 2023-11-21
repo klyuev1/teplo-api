@@ -51,9 +51,5 @@ module.exports.signIn = (req, res, next) => {
 };
 
 module.exports.signOut = (req, res) => {
-  // res.clearCookie('jwt').send({ message: 'See you soon' })
-  res.clearCookie('jwt');
-  res.clearCookie('projectData');
-  res.clearCookie('project-data');
-  res.send("cleared");
+  res.clearCookie('jwt').send({ message: 'See you soon' });
 };

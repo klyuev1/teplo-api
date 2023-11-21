@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
-const roomsSchema = new mongoose.Schema({
-  number: {
-    type: String,
-    required: true,
-  },
+const facadesSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+  },
+  link: {
+    type: String,
+    required: true,
+    validate: {
+      validator: (v) => validator.isURL(v),
+      message: 'Некорректный URL',
+    },
   },
   height: {
     type: Number,
@@ -25,18 +30,6 @@ const roomsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  areaRoom: {
-    type: Number,
-    required: true,
-  },
-  heatLoss: {
-    type: Number,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'project',
-  },
 });
 
-module.exports = mongoose.model('room', roomsSchema);
+module.exports = mongoose.model('facade', facadesSchema);

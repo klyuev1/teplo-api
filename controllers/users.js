@@ -3,7 +3,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
 
-
 module.exports.getUserMe = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)

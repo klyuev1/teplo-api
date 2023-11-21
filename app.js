@@ -3,14 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookies = require('cookie-parser');
 const cors = require('cors');
-const {errors} = require('celebrate');
+const { errors } = require('celebrate');
 
-//Подгружаем милдвары
+// Подгружаем милдвары
 const NotFoundError = require('./errors/NotFoundError');
 const InternalServerError = require('./errors/InternalServerError');
 const auth = require('./middlewares/auth');
-const proj = require('./middlewares/proj');
-
 
 // Создаем сервер, подключаемся к БД
 const { PORT = 3001, DB_ADDRESS = 'mongodb://127.0.0.1:27017/teplobd' } = process.env;
@@ -36,9 +34,8 @@ app.get('/crash-test', () => {
 app.use(require('./routes/login'));
 app.use(auth, require('./routes/users'));
 app.use(auth, require('./routes/projects'));
-app.use(proj, require('./routes/rooms'));
-// Остановился на rooms
-
+app.use(auth, require('./routes/rooms'));
+app.use(auth, require('./routes/facades'));
 
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));

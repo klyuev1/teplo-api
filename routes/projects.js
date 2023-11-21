@@ -1,12 +1,17 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const { getProjects, createProject, deleteProject, updateProject } = require('../controllers/projects');
+const {
+  getProjects,
+  createProject,
+  deleteProject,
+  updateProject,
+} = require('../controllers/projects');
 
-// GET -- получить карточки
+// GET -- получить проекты пользователя
 router.get('/projects', getProjects);
 
-// POST -- создать новую карточку
+// POST -- создать новый проект
 router.post('/projects', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required(),
@@ -19,7 +24,7 @@ router.post('/projects', celebrate({
   }),
 }), createProject);
 
-// DELETE -- удалить карточку
+// DELETE -- удалить проект
 router.delete('/projects/:projectId', celebrate({
   params: Joi.object().keys({
     projectId: Joi.string().length(24).hex().required(),

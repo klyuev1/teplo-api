@@ -1,6 +1,4 @@
-
-const room = require('../models/room');
-
+const Project = require('../models/project');
 const Room = require('../models/room');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -9,10 +7,10 @@ const NoRightsError = require('../errors/NoRightsError');
 const CREATED = 201;
 
 module.exports.getRooms = (req, res, next) => {
-  Room.find({ owner: req.project._id })
-  // Room.find({})
+  const { projectId } = req.params;
+
+  Room.find({ owner: projectId })
     .then((rooms) => {
-      console.log(rooms)
       rooms.reverse();
       res.send(rooms);
     })
@@ -20,66 +18,73 @@ module.exports.getRooms = (req, res, next) => {
 };
 
 module.exports.createRoom = (req, res, next) => {
-  const { name, height, width, areaWall, areaWindow, areaRoom} = req.body;
+  const {
+    number, name, height, width, areaWall, areaWindow, areaRoom,
+  } = req.body;
+  const { projectId } = req.params;
 
-  const {tOutside, tInside, rWall, rWindow, beta, kHousehold} = req.project;
+  Project.findOne({ _id: projectId })
+    .then((project) => {
+      const {
+        tOutside, tInside, rWall, rWindow, beta, kHousehold,
+      } = project;
 
-  let heatLossDesignOfWindow;
-  let heatLossDesignOfWall;
+      const kTransferable = 0.3354;
+      const kExpenditure = 0.35;
 
-  let heatLossInfiltration;
-  let kTransferable = 0.3354;
-  let kExpenditure = 0.35;
+      const heatLossDesignOfWall = ((1 / rWall) * areaWall * (tInside - tOutside) * (beta));
+      const heatLossDesignOfWindow = ((1 / rWindow) * areaWindow * (tInside - tOutside) * (beta));
+      const heatLossHousehold = (areaRoom * kHousehold);
+      const heatLossInfiltration = (height * kExpenditure * kTransferable * (tInside - tOutside) * areaRoom);
+      const heatLoss = Math.ceil(heatLossDesignOfWall + heatLossDesignOfWindow + heatLossInfiltration - heatLossHousehold); // Итоговые теплопотери
 
-  let heatLossHousehold;
-
-  heatLossDesignOfWall = ((1/rWall)*areaWall*(tInside-tOutside)*(beta));
-  heatLossDesignOfWindow = ((1/rWindow)*areaWindow*(tInside-tOutside)*(beta));
-  heatLossHousehold = (areaRoom*kHousehold);
-  heatLossInfiltration = (height*kExpenditure*kTransferable*(tInside-tOutside)*areaRoom);
-
-  const heatLoss = heatLossDesignOfWall + heatLossDesignOfWindow + heatLossInfiltration - heatLossHousehold;
-
-  Room.create({
-    name,
-    height,
-    width,
-    areaWall,
-    areaWindow,
-    areaRoom,
-    heatLoss,
-    owner: req.project._id
-  })
-    .then((room) => res.status(CREATED).send(room))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные'));
-      }
-      return next(err);
-    });
+      Room.create({
+        number,
+        name,
+        height,
+        width,
+        areaWall,
+        areaWindow,
+        areaRoom,
+        heatLoss,
+        owner: projectId,
+      })
+        .then((room) => res.status(CREATED).send(room))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            return next(new BadRequestError('Переданы некорректные данные'));
+          }
+          return next(err);
+        });
+    })
+    .catch(next);
 };
 
 module.exports.deleteRoom = (req, res, next) => {
-  const { roomId } = req.params;
+  const { projectId, roomId } = req.params;
 
-  Room.findById(roomId)
-    .then((room) => {
-      if (!room) {
-        throw new NotFoundError('Карточка с таким ID не найдена');
-      }
-      if (!room.owner.equals(req.project._id)) {
-        throw new NoRightsError('Невозможно удалить карту с другим ID пользователя');
-      }
-      room.deleteOne()
-        .then(() => {
-          res.send({ message: 'Карточка удалена' });
+  Project.findById(projectId)
+    .then(() => {
+      Room.findById(roomId)
+        .then((room) => {
+          if (!room) {
+            throw new NotFoundError('Карточка с таким ID не найдена');
+          }
+          if (!room.owner.equals(projectId)) {
+            throw new NoRightsError('Невозможно удалить карту с другим ID пользователя');
+          }
+          room.deleteOne()
+            .then(() => {
+              res.send({ message: 'Карточка удалена' });
+            })
+            .catch(next);
         })
-        .catch(next);
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return next(new BadRequestError('Переданы некорректные данные'));
+          }
+          return next(err);
+        });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
