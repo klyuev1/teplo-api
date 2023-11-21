@@ -6,10 +6,7 @@ const CREATED = 201;
 
 module.exports.getFacades = (req, res, next) => {
   Facade.find({})
-    .then((facades) => {
-      facades.reverse();
-      res.send(facades);
-    })
+    .then((facades) => res.send(facades))
     .catch(next);
 };
 
