@@ -22,6 +22,7 @@ mongoose.connect(DB_ADDRESS, {
 app.use(cors({ origin: ['http://localhost:3000', ''], credentials: true }));
 
 // Создаем роуты
+// Красная будка
 app.use(cookies());
 app.use(express.json());
 
