@@ -1,6 +1,7 @@
 const Facade = require('../models/facade');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
+const ArithmeticError = require('../errors/ArithmeticError');
 
 const CREATED = 201;
 
@@ -12,8 +13,14 @@ module.exports.getFacades = (req, res, next) => {
 
 module.exports.createFacade = (req, res, next) => {
   const {
-    name, link, height, width, areaWall, areaWindow,
+    name, link, height, width, areaWindow,
   } = req.body;
+
+  // Проверка входных данных
+  const areaWall = (((height * width) / 1000000) - areaWindow);
+  if (areaWall < 0) {
+    throw new ArithmeticError('Площадь стены не может быть меньше 0');
+  }
 
   Facade.create({
     name, link, height, width, areaWall, areaWindow,

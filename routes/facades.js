@@ -13,7 +13,6 @@ router.post('/facades', celebrate({
     link: Joi.string().required().regex(/^(https?:\/\/)?([a-z0-9-]+\.)*[a-z0-9-]+\.[a-z]{2,}\/?([^\s]*)$/),
     height: Joi.number().required(),
     width: Joi.number().required(),
-    areaWall: Joi.number().required(),
     areaWindow: Joi.number().required(),
   }),
 }), createFacade);
