@@ -5,6 +5,7 @@ const {
   getRooms,
   createRoom,
   deleteRoom,
+  generateCSV,
 } = require('../controllers/rooms');
 
 // GET -- получить комнаты
@@ -37,5 +38,12 @@ router.delete('/projects/:projectId/rooms/:roomId', celebrate({
     roomId: Joi.string().length(24).hex().required(),
   }),
 }), deleteRoom);
+
+// GET -- Выгрузить CSV
+router.get('/projects/:projectId/rooms/download', celebrate({
+  params: Joi.object().keys({
+    projectId: Joi.string().length(24).hex().required(),
+  }),
+}), generateCSV);
 
 module.exports = router;
