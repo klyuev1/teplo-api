@@ -29,6 +29,10 @@ const roomsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  numberFacade: {
+    type: String,
+    required: true,
+  },
   heatLoss: {
     type: Number,
   },

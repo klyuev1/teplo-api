@@ -11,7 +11,6 @@ module.exports.getRooms = (req, res, next) => {
 
   Room.find({ owner: projectId })
     .then((rooms) => {
-      rooms.reverse();
       res.send(rooms);
     })
     .catch(next);
@@ -19,7 +18,7 @@ module.exports.getRooms = (req, res, next) => {
 
 module.exports.createRoom = (req, res, next) => {
   const {
-    number, name, height, width, areaWall, areaWindow, areaRoom,
+    number, name, height, width, areaWall, areaWindow, areaRoom, numberFacade
   } = req.body;
   const { projectId } = req.params;
 
@@ -46,6 +45,7 @@ module.exports.createRoom = (req, res, next) => {
         areaWall,
         areaWindow,
         areaRoom,
+        numberFacade,
         heatLoss,
         owner: projectId,
       })

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const { getFacades, createFacade, deleteFacade } = require('../controllers/facades');
+const { getFacades, createFacade, deleteFacade, getFacade } = require('../controllers/facades');
 
 // GET -- получить фасады
 router.get('/facades', getFacades);
@@ -23,5 +23,11 @@ router.delete('/facades/:facadeId', celebrate({
     facadeId: Joi.string().length(24).hex().required(),
   }),
 }), deleteFacade);
+
+router.get('/facades/:facadeId', celebrate({
+  params: Joi.object().keys({
+    facadeId: Joi.string().length(24).hex().required(),
+  }),
+}), getFacade);
 
 module.exports = router;
