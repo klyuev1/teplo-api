@@ -25,6 +25,7 @@ router.post('/projects/:projectId/rooms', celebrate({
     areaWall: Joi.number().required(),
     areaWindow: Joi.number().required(),
     areaRoom: Joi.number().required(),
+    numberFacade: Joi.string().required(),
   }),
   params: Joi.object().keys({
     projectId: Joi.string().length(24).hex().required(),
