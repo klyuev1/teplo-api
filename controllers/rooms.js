@@ -11,7 +11,6 @@ const CREATED = 201;
 
 module.exports.getRooms = (req, res, next) => {
   const { projectId } = req.params;
-
   Room.find({ owner: projectId })
     .then((rooms) => {
       res.send(rooms);
@@ -110,7 +109,7 @@ module.exports.generateCSV = async (req, res, next) => {
   await Project.findOne({ _id: projectId }).then(async (project) => {
     const { name, tOutside, tInside, rWall, rWindow, beta, kHousehold } = project;
 
-    await Room.find().then((data) => {
+    await Room.find({owner: projectId}).then((data) => {
       data.map(
         ({ number, name, height, width, areaWall, areaRoom, heatLoss }) => {
           table.push({
@@ -132,6 +131,7 @@ module.exports.generateCSV = async (req, res, next) => {
     });
 
   });
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   try {
     await downloadRooms(table); // Дожидаемся создания файла
     const filePath = __dirname + '/output.csv';

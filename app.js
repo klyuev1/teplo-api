@@ -19,7 +19,7 @@ mongoose.connect(DB_ADDRESS, {
   useNewUrlParser: true,
 });
 
-app.use(cors({ origin: ['http://localhost:3000', ''], credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'https://drive.google.com'], credentials: true }));
 
 app.use(cookies());
 app.use(express.json());
