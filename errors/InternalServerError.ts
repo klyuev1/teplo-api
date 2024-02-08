@@ -5,4 +5,4 @@ const InternalServerError = (err, req, res, next) => {
   next();
 };
 
-module.exports = InternalServerError;
+export default InternalServerError;

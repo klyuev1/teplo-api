@@ -1,12 +1,14 @@
-const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+import { Router } from 'express';
+import { celebrate, Joi, } from 'celebrate';
 
-const {
+import {
   getProjects,
   createProject,
   deleteProject,
   updateProject,
-} = require('../controllers/projects');
+} from '../controllers/projects';
+
+const router = Router();
 
 // GET -- получить проекты пользователя
 router.get('/projects', getProjects);
@@ -44,4 +46,4 @@ router.patch('/projects/:projectId', celebrate({
   }),
 }), updateProject);
 
-module.exports = router;
+export default router;

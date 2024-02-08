@@ -1,7 +1,8 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
+import { IFacade } from '../interfaces/IFacade';
 
-const facadesSchema = new mongoose.Schema({
+const facadesSchema: Schema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -10,7 +11,7 @@ const facadesSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => validator.isURL(v),
+      validator: (v: string) => validator.isURL(v),
       message: 'Некорректный URL',
     },
   },
@@ -32,4 +33,6 @@ const facadesSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('facade', facadesSchema);
+const FacadeModel = mongoose.model<IFacade>('facade', facadesSchema);
+
+export default FacadeModel;

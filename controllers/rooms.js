@@ -1,9 +1,11 @@
 /* eslint-disable */
 const Project = require("../models/project");
 const Room = require("../models/room");
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
-const NoRightsError = require("../errors/NoRightsError");
+
+import NotFoundError from '../errors/NotFoundError';
+import BadRequestError from '../errors/BadRequestError';
+import NoRightsError from'../errors/NoRightsError';
+
 const { downloadRooms } = require("../middlewares/downloadRooms");
 const fs = require("fs");
 

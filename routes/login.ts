@@ -1,8 +1,9 @@
-const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const auth = require('../middlewares/auth');
+import { Router } from 'express';
+import { celebrate, Joi, } from 'celebrate';
+import {auth} from'../middlewares/auth';
+import { signIn, signUp, signOut } from '../controllers/login';
 
-const { signIn, signUp, signOut } = require('../controllers/login');
+const router = Router();
 
 router.use('/signup', celebrate({
   body: Joi.object().keys({
@@ -21,4 +22,4 @@ router.use('/signin', celebrate({
 
 router.use('/signout', auth, signOut);
 
-module.exports = router;
+export default router;

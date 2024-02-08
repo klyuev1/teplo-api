@@ -1,14 +1,23 @@
-// Подгружаем плагины
-const express = require('express');
-const mongoose = require('mongoose');
-const cookies = require('cookie-parser');
-const cors = require('cors');
-const { errors } = require('celebrate');
+// Плагины
+import express from 'express';
+import mongoose, {ConnectOptions} from 'mongoose';
+import cookies from 'cookie-parser';
+import cors from 'cors';
+import { errors } from 'celebrate';
 
-// Подгружаем милдвары
-const NotFoundError = require('./errors/NotFoundError');
-const InternalServerError = require('./errors/InternalServerError');
-const auth = require('./middlewares/auth');
+// Руты
+import facadesRouter from './routes/facades';
+import projectRouter from './routes/projects';
+import loginRouter from './routes/login';
+import UserRouter from './routes/users';
+
+// Мидлвары
+import { auth } from './middlewares/auth';
+
+// Ошибки
+import NotFoundError from './errors/NotFoundError';
+import InternalServerError from './errors/InternalServerError';
+
 
 // Создаем сервер, подключаемся к БД
 const { PORT = 3001, DB_ADDRESS = 'mongodb://127.0.0.1:27017/teplobd' } = process.env;
@@ -17,7 +26,7 @@ const app = express();
 
 mongoose.connect(DB_ADDRESS, {
   useNewUrlParser: true,
-});
+} as ConnectOptions);
 
 app.use(cors({ origin: ['http://localhost:3000', 'https://drive.google.com'], credentials: true }));
 
@@ -30,11 +39,11 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use(require('./routes/login'));
-app.use(auth, require('./routes/users'));
-app.use(auth, require('./routes/projects'));
+app.use(loginRouter);
+app.use(auth, UserRouter);
+app.use(auth, projectRouter);
 app.use(auth, require('./routes/rooms'));
-app.use(auth, require('./routes/facades'));
+app.use(auth, facadesRouter);
 
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));

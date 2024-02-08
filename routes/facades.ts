@@ -1,7 +1,8 @@
-const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+import { Router } from 'express';
+import { celebrate, Joi, } from 'celebrate';
+import { getFacades, createFacade, deleteFacade } from '../controllers/facades'
 
-const { getFacades, createFacade, deleteFacade } = require('../controllers/facades');
+const router = Router();
 
 // GET -- получить фасады
 router.get('/facades', getFacades);
@@ -24,4 +25,4 @@ router.delete('/facades/:facadeId', celebrate({
   }),
 }), deleteFacade);
 
-module.exports = router;
+export default router;

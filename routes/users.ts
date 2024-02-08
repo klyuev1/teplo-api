@@ -1,7 +1,9 @@
-const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+import { Router } from 'express';
+import { celebrate, Joi, } from 'celebrate';
 
-const { getUserMe, updateUser } = require('../controllers/users');
+import { getUserMe, updateUser } from '../controllers/users';
+
+const router = Router();
 
 // GET -- получить пользователей
 router.get('/users/me', getUserMe);
@@ -14,4 +16,4 @@ router.patch('/users/me', celebrate({
   }),
 }), updateUser);
 
-module.exports = router;
+export default router;

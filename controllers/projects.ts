@@ -1,10 +1,20 @@
-const Project = require('../models/project');
-const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
-const NoRightsError = require('../errors/NoRightsError');
+import { Response, NextFunction } from 'express';
 
-module.exports.getProjects = (req, res, next) => {
-  Project.find({ owner: req.user._id })
+import ProjectModel from '../models/project';
+import {AuthRequest} from '../interfaces/AuthRequest';
+
+import NotFoundError from '../errors/NotFoundError';
+import BadRequestError from '../errors/BadRequestError';
+import NoRightsError from'../errors/NoRightsError';
+
+
+
+export const getProjects = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return next(new NotFoundError('Пользователь не авторизован'));
+  }
+
+  ProjectModel.find({ owner: req.user._id })
     .then((projects) => {
       projects.reverse();
       res.send(projects);
@@ -12,7 +22,7 @@ module.exports.getProjects = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createProject = (req, res, next) => {
+export const createProject = (req: AuthRequest, res: Response, next: NextFunction) => {
   const {
     name,
     tOutside,
@@ -23,7 +33,7 @@ module.exports.createProject = (req, res, next) => {
     kHousehold,
   } = req.body;
 
-  Project.create({
+  ProjectModel.create({
     name,
     tOutside,
     tInside,
@@ -31,7 +41,7 @@ module.exports.createProject = (req, res, next) => {
     rWindow,
     beta,
     kHousehold,
-    owner: req.user._id,
+    owner: req.user?._id,
 
   })
     .then((project) => {
@@ -45,10 +55,10 @@ module.exports.createProject = (req, res, next) => {
     });
 };
 
-module.exports.deleteProject = (req, res, next) => {
+export const deleteProject = (req, res, next) => {
   const { projectId } = req.params;
 
-  Project.findById(projectId)
+  ProjectModel.findById(projectId)
     .then((project) => {
       if (!project) {
         throw new NotFoundError('Карточка с таким ID не найдена');
@@ -70,7 +80,7 @@ module.exports.deleteProject = (req, res, next) => {
     });
 };
 
-module.exports.updateProject = (req, res, next) => {
+export const updateProject = (req, res, next) => {
   const { projectId } = req.params;
   const {
     name, tOutside, tInside, rWall, rWindow, beta, kHousehold,
@@ -78,7 +88,7 @@ module.exports.updateProject = (req, res, next) => {
 
   const opts = { runValidators: true, new: true };
 
-  Project.findByIdAndUpdate(projectId, { name, tOutside, tInside, rWall, rWindow, beta, kHousehold }, opts)
+  ProjectModel.findByIdAndUpdate(projectId, { name, tOutside, tInside, rWall, rWindow, beta, kHousehold }, opts)
     .then((project) => res.send({ project }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
