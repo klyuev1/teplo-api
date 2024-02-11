@@ -1,26 +1,29 @@
-const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
-const ConflictingRequestError = require('../errors/ConflictingRequestError');
+import { Response, NextFunction } from 'express';
 
-module.exports.getUserMe = (req, res, next) => {
-  const userId = req.user._id;
-  User.findById(userId)
+import UserModel from '../models/user';
+import {AuthRequest} from '../interfaces/AuthRequest';
+import NotFoundError from '../errors/NotFoundError';
+import BadRequestError from '../errors/BadRequestError';
+import ConflictingRequestError from'../errors/ConflictingRequestError';
+
+export const getUserMe = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const userId = req.user?._id;
+  UserModel.findById(userId)
     .orFail(new NotFoundError('Пользоваетеля с таким id нет'))
     .then(({ name, email }) => res.status(200).send({ name, email }))
     .catch(next);
 };
 
-module.exports.updateUser = (req, res, next) => {
+export const updateUser = (req, res, next) => {
   const { email, name } = req.body;
   const opts = { runValidators: true, new: true };
 
-  User.findByIdAndUpdate(req.user._id, { email, name }, opts)
+  UserModel.findByIdAndUpdate(req.user?._id, { email, name }, opts)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с таким ID не найден');
       }
-      return res.send({ user });
+      return res.status(200).send({ message: 'Пользователь успешно обновлен' });
     })
     .catch((err) => {
       if (err.code === 11000) {

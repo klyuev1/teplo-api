@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-
-const projectsSchema = new mongoose.Schema({
+import mongoose, { Schema } from 'mongoose';
+import { IProject } from '../interfaces/Iproject'
+const projectsSchema: Schema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -40,4 +40,6 @@ const projectsSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('project', projectsSchema);
+const ProjectModel = mongoose.model<IProject>('project', projectsSchema);
+
+export default ProjectModel;
