@@ -55,7 +55,7 @@ export const createProject = (req: AuthRequest, res: Response, next: NextFunctio
     });
 };
 
-export const deleteProject = (req, res, next) => {
+export const deleteProject = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { projectId } = req.params;
 
   ProjectModel.findById(projectId)
@@ -63,8 +63,10 @@ export const deleteProject = (req, res, next) => {
       if (!project) {
         throw new NotFoundError('Карточка с таким ID не найдена');
       }
-      if (!project.owner.equals(req.user._id)) {
-        throw new NoRightsError('Невозможно удалить карту с другим ID пользователя');
+      if (typeof req.user !=='undefined') {
+        if (!project.owner.equals(req.user._id)) {
+          throw new NoRightsError('Невозможно удалить карту с другим ID пользователя');
+        }
       }
       project.deleteOne()
         .then(() => {
@@ -80,7 +82,7 @@ export const deleteProject = (req, res, next) => {
     });
 };
 
-export const updateProject = (req, res, next) => {
+export const updateProject = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { projectId } = req.params;
   const {
     name, tOutside, tInside, rWall, rWindow, beta, kHousehold,

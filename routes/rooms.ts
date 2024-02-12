@@ -1,12 +1,14 @@
-const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+import { Router } from 'express';
+import { celebrate, Joi, } from 'celebrate';
 
-const {
+import {
   getRooms,
   createRoom,
   deleteRoom,
   generateCSV,
-} = require('../controllers/rooms');
+} from '../controllers/rooms'
+
+const router = Router();
 
 // GET -- получить комнаты
 router.get('/projects/:projectId/rooms', celebrate({

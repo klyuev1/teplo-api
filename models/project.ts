@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { IProject } from '../interfaces/Iproject'
+import { IProject } from '../interfaces/Iproject';
+
 const projectsSchema: Schema = new mongoose.Schema({
   name: {
     type: String,

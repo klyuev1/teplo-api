@@ -25,10 +25,12 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
   let payload: IUserPayload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(token, JWT_SECRET) as IUserPayload;
   } catch (err) {
     return next(new AuthorizationError('Необходима авторизация'));
   }
+
+
 
   req.user = payload;
 

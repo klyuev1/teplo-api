@@ -25,7 +25,7 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
       email: user.email,
       name: user.name,
     });
-  } catch (err) {
+  } catch (err: any) {
     if (err.name === 'ValidationError') {
       const validationErrors = err.errors as { [key: string]: { message: string } };
       const errorMessage = Object.values(validationErrors).map((error) => error.message).join(', ');

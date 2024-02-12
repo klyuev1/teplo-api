@@ -14,7 +14,7 @@ export const getUserMe = (req: AuthRequest, res: Response, next: NextFunction) =
     .catch(next);
 };
 
-export const updateUser = (req, res, next) => {
+export const updateUser = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { email, name } = req.body;
   const opts = { runValidators: true, new: true };
 

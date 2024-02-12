@@ -10,13 +10,13 @@ interface IUserModel extends Model<IUser> {
   findUserByCredentials(email: string, password: string): Promise<IUser | null>;
 }
 
-const userSchema: Schema = new mongoose.Schema({
+const userSchema: Schema<IUser> = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator: validator.isEmail,
+      validator: (value: string) => validator.isEmail(value),
       message: 'Некорректный адрес электронной почты',
     },
   },

@@ -1,35 +1,48 @@
-/* eslint-disable */
-const Project = require("../models/project");
-const Room = require("../models/room");
+
+import { Response, NextFunction } from 'express';
+import {AuthRequest} from '../interfaces/AuthRequest';
+
+import ProjectModel from '../models/project';
+import RoomModel from '../models/room';
+
+
+// const Project = require("../models/project");
+// const Room = require("../models/room");
 
 import NotFoundError from '../errors/NotFoundError';
 import BadRequestError from '../errors/BadRequestError';
 import NoRightsError from'../errors/NoRightsError';
+import { IRoom } from '../interfaces/IRoom';
+import { ITableItem } from '../interfaces/ITableItem';
 
 const { downloadRooms } = require("../middlewares/downloadRooms");
-const fs = require("fs");
+// const fs = require("fs");
 
 const CREATED = 201;
 
-module.exports.getRooms = (req, res, next) => {
+export const getRooms = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { projectId } = req.params;
-  Room.find({ owner: projectId })
+  RoomModel.find({ owner: projectId })
     .then((rooms) => {
       res.send(rooms);
     })
     .catch(next);
 };
 
-module.exports.createRoom = (req, res, next) => {
+export const createRoom = (req: AuthRequest, res: Response, next: NextFunction) => {
 
   const {
     number, name, height, width, areaWall, areaWindow, areaRoom, numberFacade
-  } = req.body;
+  }: IRoom = req.body;
 
   const { projectId } = req.params;
 
-  Project.findOne({ _id: projectId })
+  ProjectModel.findOne({ _id: projectId })
     .then((project) => {
+      if (!project) {
+        throw new NotFoundError('Проект не найден');
+      }
+
       const { tOutside, tInside, rWall, rWindow, beta, kHousehold } = project;
 
       const kTransferable = 0.3354;
@@ -49,7 +62,7 @@ module.exports.createRoom = (req, res, next) => {
           heatLossHousehold
       ); // Итоговые теплопотери
 
-      Room.create({
+      RoomModel.create({
         number,
         name,
         height,
@@ -72,12 +85,12 @@ module.exports.createRoom = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.deleteRoom = (req, res, next) => {
+export const deleteRoom = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { projectId, roomId } = req.params;
 
-  Project.findById(projectId)
+  ProjectModel.findById(projectId)
     .then(() => {
-      Room.findById(roomId)
+      RoomModel.findById(roomId)
         .then((room) => {
           if (!room) {
             throw new NotFoundError("Карточка с таким ID не найдена");
@@ -104,14 +117,18 @@ module.exports.deleteRoom = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.generateCSV = async (req, res, next) => {
+export const generateCSV = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const { projectId } = req.params;
-  const table = [];
+  const table: ITableItem[] = [];
 
-  await Project.findOne({ _id: projectId }).then(async (project) => {
-    const { name, tOutside, tInside, rWall, rWindow, beta, kHousehold } = project;
+  await ProjectModel.findOne({ _id: projectId }).then(async (project) => {
 
-    await Room.find({owner: projectId}).then((data) => {
+    if (!project) {
+      throw new NotFoundError('Проект не найден');
+    }
+    const { tOutside, tInside, rWall, rWindow, beta, kHousehold } = project;
+
+    await RoomModel.find({owner: projectId}).then((data) => {
       data.map(
         ({ number, name, height, width, areaWall, areaRoom, heatLoss }) => {
           table.push({

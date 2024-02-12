@@ -5,7 +5,7 @@ export interface IProject extends Document {
   tOutside: number;
   tInside: number;
   rWall: number;
-  rwindow: number;
+  rWindow: number;
   beta: number;
   kHousehold: number;
   owner: Types.ObjectId;
